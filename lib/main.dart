@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:isearch/map_screen.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TfliteHome(),
+      home: MapScreen(),
     );
   }
 }
