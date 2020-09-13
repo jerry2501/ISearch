@@ -172,6 +172,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.16.1"
   location_permissions:
     dependency: transitive
     description:
@@ -261,6 +268,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  sunrise_sunset:
+    dependency: "direct main"
+    description:
+      name: sunrise_sunset
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
   term_glyph:
     dependency: transitive
     description:

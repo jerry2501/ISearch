@@ -29,6 +29,8 @@ dependencies:
   geolocator: ^5.3.1
   google_maps_flutter:
   http:
+  sunrise_sunset:
+  intl:
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -56,6 +58,8 @@ flutter:
      - assets/tflite/ssd_mobilenet.txt
      - assets/tflite/yolov2_tiny.tflite
      - assets/tflite/yolov2_tiny.txt
+     - assets/sunrise.json
+     - assets/sunset.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
