@@ -21,7 +21,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MapScreen(),
+      theme: ThemeData(
+        primarySwatch: Colors.deepOrange,
+        textTheme: TextTheme().copyWith(
+          title:TextStyle(color: Colors.white,fontWeight: FontWeight.bold)
+        ),
+      ),
+      home: TfliteHome(),
     );
   }
 }
@@ -44,7 +50,7 @@ class _TfliteHomeState extends State<TfliteHome> {
 
 
   selectFromImagePicker() async{
-    var image=await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image=await ImagePicker.pickImage(source: ImageSource.camera);
     if(image==null)return;
     setState(() {
       _busy=true;
@@ -164,11 +170,43 @@ class _TfliteHomeState extends State<TfliteHome> {
         );
       }).toList();
     };
+    
+    if(_image!=null)
+    stackChildren.add(
+      Positioned(
+        bottom: MediaQuery.of(context).size.height*0.08,
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text('Detected Objects:',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.deepOrange,fontSize: 16),),
+            ),
+            SizedBox(height: 6,),
+            Row(children: [
+             ... _recognitions.map((re){
+                   return Padding(
+                     padding: const EdgeInsets.symmetric(horizontal: 4),
+                     child: RaisedButton(
+                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                       child: Text('${re['detectedClass']}'.toUpperCase(),style: Theme.of(context).textTheme.title),
+                       onPressed: (){
+                         Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MapScreen(re['detectedClass'])));
+                       },
+                       color: Colors.indigo,
+                     ),
+                   );
+              }).toList(),
+            ],),
+          ],
+        ),
+      ),
+    );
 
     stackChildren.add(Positioned(
       top: 0.0,
       left: 0.0,
       width: size.width,
+      height: size.height*0.75,
       child: _image==null?Text('No image selected') : Image.file(_image),
     ));
 
@@ -184,7 +222,8 @@ class _TfliteHomeState extends State<TfliteHome> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('TFLite Demo'),
+        title: Text('ISearch'),
+
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.image),

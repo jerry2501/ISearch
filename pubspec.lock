@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.10"
   equatable:
     dependency: transitive
     description:
@@ -104,6 +111,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.8"
+  flutter_tabler_icons:
+    dependency: "direct main"
+    description:
+      name: flutter_tabler_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -123,6 +137,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.4"
+  google_map_polyline:
+    dependency: "direct main"
+    description:
+      name: google_map_polyline
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0+1"
   google_maps_flutter:
     dependency: "direct main"
     description:

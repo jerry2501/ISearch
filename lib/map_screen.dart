@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_map_polyline/google_map_polyline.dart';
 import 'package:intl/intl.dart';
 import 'package:isearch/models/place.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,15 +14,21 @@ import 'package:http/http.dart' as http;
 import 'package:sunrise_sunset/sunrise_sunset.dart';
 
 class MapScreen extends  StatefulWidget {
+  String _detectedObject;
+  MapScreen(this._detectedObject);
   @override
   _MapScreenState createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
   var _currentLocation;
-  bool _isLoading;
+  bool _isLoading,_isdark=false;
+  Set<Polyline> polyline={};
+  GoogleMapPolyline _googleMapPolyline=GoogleMapPolyline(apiKey: 'AIzaSyAic3e4Kt0mfxq6p3z-q8etA7XvvnSFGLU');
+  var routeCoords;
   List<Place> _places=[];
   List<Marker> allMarkers=[];
+  List<bool> _isDirection=[];
   LatLng _lastMapPosition;
   GoogleMapController _controller;
   PageController _pageController;
@@ -59,7 +67,7 @@ class _MapScreenState extends State<MapScreen> {
 
 
       await http.get(
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentLocation.latitude},${_currentLocation.longitude}&radius=2000&keyword=laptop&key=AIzaSyAic3e4Kt0mfxq6p3z-q8etA7XvvnSFGLU',
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentLocation.latitude},${_currentLocation.longitude}&radius=2000&keyword=${widget._detectedObject}&key=AIzaSyAic3e4Kt0mfxq6p3z-q8etA7XvvnSFGLU',
       ).then((response){
         print(json.decode(response.body));
         final Response=json.decode(response.body);
@@ -89,6 +97,9 @@ class _MapScreenState extends State<MapScreen> {
               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
             )
           );
+          //Make list of bool for direction button
+          _isDirection.add(false);
+          print('No. of var in Bool direction: ${_isDirection.length}');
           _pageController = PageController(initialPage: 1, viewportFraction: 0.8)
             ..addListener(_onScroll);
           print(allMarkers);
@@ -115,6 +126,16 @@ class _MapScreenState extends State<MapScreen> {
       getJsonFile('assets/sunset.json').then(setMapStyle);
     }
 
+
+  }
+
+  changeMode(){
+    if(!_isdark){
+      getJsonFile('assets/sunrise.json').then(setMapStyle);
+    }
+    else{
+      getJsonFile('assets/sunset.json').then(setMapStyle);
+    }
 
   }
 
@@ -155,7 +176,7 @@ class _MapScreenState extends State<MapScreen> {
         }
         return Center(
           child: SizedBox(
-            height: Curves.easeInOut.transform(value) * 125.0,
+            height: Curves.easeInOut.transform(value) * 160.0,
             width: Curves.easeInOut.transform(value) * 350.0,
             child: widget,
           ),
@@ -233,6 +254,32 @@ class _MapScreenState extends State<MapScreen> {
                                         fontWeight: FontWeight.w300),
                                     overflow: TextOverflow.ellipsis,
                                   ),
+                                ),
+                                Container(
+                                  width: 160,
+                                  height: 30,
+                                  child: FlatButton.icon(
+                                    onPressed:(!_isDirection[index])?(){
+                                      for(int i=0;i<_places.length;i++){
+                                        if(i!=index){
+                                          _isDirection[i]=false;
+                                        }
+                                        else{
+                                          _isDirection[i]=true;
+                                        }
+                                      };
+                                      _setDirection(_places[index].locationCoords);
+                                    }:(){
+                                      setState(() {
+                                        _isDirection[index]=false;
+                                        polyline.clear();
+                                      });
+                                    },
+                                   icon: (!_isDirection[index])?Icon(Icons.directions,color: Colors.white,):Icon(Icons.close,color: Colors.white,),
+                                   label: (!_isDirection[index])?Text('Directions',style: TextStyle(color: Colors.white),):Text('Cancel',style: TextStyle(color: Colors.white),),
+                                   color: (!_isDirection[index])?Colors.blue:Colors.red,
+                                   shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(15)),
+                                   ),
                                 )
                               ])
                         ]))))
@@ -240,9 +287,44 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  Future _setDirection(LatLng destination) async{
+   routeCoords = await _googleMapPolyline.getCoordinatesWithLocation(
+     origin: LatLng(_currentLocation.latitude,_currentLocation.longitude),
+      destination: destination,
+       mode: RouteMode.driving);
+       setState(() {
+         polyline.add(
+        Polyline(
+          polylineId: PolylineId('route1'),
+          visible: true,
+          points: routeCoords,
+          width: 4,
+          color: Colors.blue,
+          startCap: Cap.roundCap,
+          endCap: Cap.buttCap
+        ),
+      ); 
+       });
+      
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('ISearch'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.lightbulb_outline,color: _isdark?Colors.white:Colors.black,),
+            onPressed: (){
+              setState(() {
+                _isdark?_isdark=false:_isdark=true;
+                 changeMode();
+              });
+            },
+          ),
+        ]
+      ),
       body: Stack(
         children: [
           (_isLoading)?Center(child:CircularProgressIndicator()):Container(
@@ -255,6 +337,7 @@ class _MapScreenState extends State<MapScreen> {
               zoomControlsEnabled: true,
               onMapCreated: _onMapCreated,
               mapType: MapType.normal,
+              polylines: polyline,
               markers: Set.from(allMarkers),
               initialCameraPosition: CameraPosition(
                 target: LatLng(
