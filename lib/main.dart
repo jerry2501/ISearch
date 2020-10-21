@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:isearch/map_screen.dart';
+import 'package:splash_screen_view/SplashScreenView.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
@@ -27,7 +28,16 @@ class MyApp extends StatelessWidget {
           title:TextStyle(color: Colors.white,fontWeight: FontWeight.bold)
         ),
       ),
-      home: TfliteHome(),
+      
+      home:SplashScreenView(
+        imageSrc: 'assets/playstore.png',
+        home: TfliteHome(),
+        duration: 300,
+        text: "ISearch",
+        textType: TextType.ScaleAnimatedText,
+        textStyle: TextStyle(color: Colors.deepOrange,fontWeight: FontWeight.bold,fontSize: 34),
+        backgroundColor: Colors.white,
+      ),
     );
   }
 }
