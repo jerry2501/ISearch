@@ -217,7 +217,7 @@ class _TfliteHomeState extends State<TfliteHome> {
       left: 0.0,
       width: size.width,
       height: size.height*0.75,
-      child: _image==null?Text('No image selected') : Image.file(_image),
+      child: _image==null?Image.asset('assets/bg.png') : Image.file(_image),
     ));
 
     stackChildren.addAll(
@@ -236,7 +236,7 @@ class _TfliteHomeState extends State<TfliteHome> {
 
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.image),
+        child: Icon(Icons.camera_alt),
         tooltip: 'Pick image from gallery',
         onPressed: selectFromImagePicker,
       ),
