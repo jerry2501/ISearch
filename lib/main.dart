@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       ),
       
       home:SplashScreenView(
-        imageSrc: '',
+        imageSrc: 'assets/playstore.png',
         home: TfliteHome(),
         duration: 300,
         text: "ISearch",
